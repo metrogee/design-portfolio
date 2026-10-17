@@ -1996,6 +1996,24 @@
       .marquee ul { flex-wrap: wrap; }
       .status__dot::after { animation: none; }
     }
+
+    /* ==========================================================================
+       21. RESUME VIEW (page #cv)
+       ========================================================================== */
+    .cv-view { display: none; }
+    .cv-view.active { display: block; }
+    .cv-wrap { max-width: 1000px; margin: 0 auto; padding: 112px var(--gutter) 90px; }
+    .cv-title { font-family: var(--serif); font-weight: 400; font-size: clamp(2.2rem, 1.3rem + 3vw, 3.6rem); line-height: 1.05; letter-spacing: -0.03em; margin: 10px 0 0; }
+    .cv-sub { margin: 14px 0 0; color: var(--text-muted); max-width: 40em; }
+    .cv-actions { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px; }
+    .cv-viewer { margin-top: 34px; display: grid; gap: 18px; }
+    .cv-page { background: #fff; border-radius: var(--radius-image); overflow: hidden; box-shadow: 0 10px 34px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.1); }
+    .cv-page canvas { display: block; width: 100%; height: auto; }
+    .cv-state { padding: 44px 24px; text-align: center; color: var(--text-muted); border: 1px dashed var(--border); border-radius: 14px; background: var(--glass-bg); }
+    .cv-fallback { display: grid; gap: 16px; }
+    .cv-fallback .cv-state { padding: 22px 24px; text-align: left; }
+    .cv-fallback .cv-actions { margin-top: 14px; }
+    .cv-fallback iframe { width: 100%; height: min(86vh, 1100px); border: 1px solid var(--border); border-radius: var(--radius-image); background: #fff; }
   </style>
 </head>
 
@@ -2030,7 +2048,7 @@
         </svg>
       </button>
 
-      <a class="resume-btn" href="https://drive.google.com/file/d/1N9Ye51-acP7mc1TsaCbmxBksvjiUTsQg/view?usp=sharing" target="_blank" rel="noopener">Download Resume ↗</a>
+      <a class="resume-btn" href="#cv">View Resume</a>
 
       <button class="burger" id="burgerBtn" aria-label="Open menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -2046,7 +2064,7 @@
     <a href="#skills"    class="mobile-link">Skills</a>
     <a href="#education" class="mobile-link">Education</a>
     <a href="#contact"   class="mobile-link">Contact</a>
-    <a class="resume-btn" href="https://drive.google.com/file/d/1N9Ye51-acP7mc1TsaCbmxBksvjiUTsQg/view?usp=sharing" target="_blank" rel="noopener">Download Resume ↗</a>
+    <a class="resume-btn" href="#cv">View Resume</a>
   </div>
 
 
@@ -2382,6 +2400,25 @@
 
 
   <!-- ==========================================================================
+       RESUME VIEW
+       Shows cv.pdf inside the site (page #cv). Put cv.pdf in the same folder as this file.
+       The script below draws the PDF's pages; "Download PDF" gives a copy with selectable text.
+       ========================================================================== -->
+  <div class="cv-view" id="cvView">
+    <a href="#" class="cs-back" id="cvBack">← Back to portfolio</a>
+    <div class="cv-wrap">
+      <div class="eyebrow">Resume</div>
+      <h1 class="cv-title">Ibrahim Goshie</h1>
+      <p class="cv-sub">Read it here, or download a copy with selectable text.</p>
+      <div class="cv-actions"><a class="btn-primary" id="cvDownload" href="cv.pdf" download="Ibrahim-Goshie-CV.pdf">Download PDF</a></div>
+      <div class="cv-viewer" id="cvViewer" role="region" aria-label="Resume pages" aria-live="polite">
+        <div class="cv-state">Loading the resume&hellip;</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==========================================================================
        SCRIPT
        1.  Content data (projects, skills, process, certifications)
        2.  Rendering helpers (cards, pills, lists)
@@ -2628,7 +2665,7 @@
         role: "UI/UX Designer & Web Designer",
         duration: "4-8 Weeks",
         client: "Apostle Praise Joshua",
-        liveUrl: "https://apostlepraisejoshua..com/",
+        liveUrl: "https://apostlepraisejoshua.com/",
 
         // Case study written content
         overview: "A personal ministry landing page designed to introduce Apostle Praise Joshua, communicate his faith and calling, and connect visitors with Scripture-rooted encouragement through Spirit Surge Global. The project brings together personal storytelling, ministry information, newsletter subscriptions, a free devotional offer, and a blog featuring practical teachings on faith, spiritual growth, purpose, and everyday life. The goal is to create a welcoming digital experience that helps visitors know the person behind the ministry, discover its message, and take the next step toward building a deeper relationship with God.",
@@ -3225,6 +3262,7 @@
 
       // Swap the main site out for the case study
       currentView = project.slug;
+      cvView.classList.remove('active');
       mainSite.style.display = 'none';
       navEl.style.display = 'none';
       caseStudy.classList.add('active');
@@ -3236,6 +3274,7 @@
       stopGalleryCarousels();
       document.getElementById('csVideoEl').pause();
       caseStudy.classList.remove('active');
+      cvView.classList.remove('active');
       mainSite.style.display = '';
       navEl.style.display = '';
     }
@@ -3258,6 +3297,131 @@
       displayHome();
       history.pushState({}, '', '#work');
       document.getElementById('work').scrollIntoView();
+    });
+
+
+    /* ========================================================================
+       RESUME VIEW
+       #cv shows cv.pdf inside the site. PDF.js (loaded only when the resume is
+       opened) draws each page onto a canvas so it also works on phones, where
+       browsers often cannot show a PDF inside a page.
+       ======================================================================== */
+    const cvView = document.getElementById('cvView');
+    const cvViewer = document.getElementById('cvViewer');
+    const CV_SETTINGS = {
+      pdf:    'cv.pdf',                       // the PDF, in the same folder as this page
+      pdfjs:  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+      worker: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+      drive:  'https://drive.google.com/file/d/1N9Ye51-acP7mc1TsaCbmxBksvjiUTsQg/view?usp=drive_link' // shown only if the PDF cannot be displayed here
+    };
+    let cvDoc = null, cvStarted = false, cvToken = 0, cvLastWidth = 0;
+
+    function loadScriptOnce(src) {
+      return new Promise((resolve, reject) => {
+        const el = document.createElement('script');
+        el.src = src; el.onload = resolve; el.onerror = reject;
+        document.head.appendChild(el);
+      });
+    }
+
+    /* If anything fails (offline, file missing, old browser): the native viewer plus plain links */
+    function showCvFallback(reason) {
+      if (window.console) console.warn('[resume] Showing fallback:', reason);
+      cvViewer.innerHTML = `
+        <div class="cv-fallback">
+          <div class="cv-state"><strong>The resume could not be displayed in this viewer.</strong><br>You can still open or download it below.
+            <div class="cv-actions">
+              <a class="btn-primary" href="${CV_SETTINGS.pdf}" download="Ibrahim-Goshie-CV.pdf">Download PDF</a>
+              <a class="btn-secondary" href="${CV_SETTINGS.pdf}" target="_blank" rel="noopener">Open in a new tab</a>
+              ${CV_SETTINGS.drive ? `<a class="btn-secondary" href="${CV_SETTINGS.drive}" target="_blank" rel="noopener">View on Google Drive</a>` : ''}
+            </div>
+          </div>
+          <iframe src="${CV_SETTINGS.pdf}#view=FitH" title="Resume (PDF)"></iframe>
+        </div>`;
+    }
+
+    async function renderCvPages() {
+      const token = ++cvToken;
+      const width = cvViewer.clientWidth;
+      cvLastWidth = width;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const frag = document.createDocumentFragment();
+      for (let n = 1; n <= cvDoc.numPages; n++) {
+        const page = await cvDoc.getPage(n);
+        if (token !== cvToken) return;                       // a newer render started (window resized)
+        const base = page.getViewport({ scale: 1 });
+        const viewport = page.getViewport({ scale: (width / base.width) * dpr });
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.floor(viewport.width);
+        canvas.height = Math.floor(viewport.height);
+        canvas.setAttribute('role', 'img');
+        canvas.setAttribute('aria-label', 'Resume page ' + n + ' of ' + cvDoc.numPages);
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+        if (token !== cvToken) return;
+        const holder = document.createElement('div');
+        holder.className = 'cv-page';
+        holder.appendChild(canvas);
+        frag.appendChild(holder);
+      }
+      cvViewer.innerHTML = '';
+      cvViewer.appendChild(frag);
+    }
+
+    /** Loads the PDF the first time the resume is opened. */
+    function startCv() {
+      if (cvStarted) return;
+      cvStarted = true;
+      loadScriptOnce(CV_SETTINGS.pdfjs)
+        .then(() => {
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = CV_SETTINGS.worker;
+          return window.pdfjsLib.getDocument(CV_SETTINGS.pdf).promise;
+        })
+        .then((doc) => { cvDoc = doc; return renderCvPages(); })
+        .catch((err) => showCvFallback(err && err.message || err));
+    }
+
+    let cvResizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(cvResizeTimer);
+      cvResizeTimer = setTimeout(() => {
+        if (cvDoc && cvView.classList.contains('active') && Math.abs(cvViewer.clientWidth - cvLastWidth) > 20) {
+          renderCvPages().catch((err) => showCvFallback(err && err.message || err));
+        }
+      }, 200);
+    });
+
+    /** Swaps the main site (or a case study) out for the resume. */
+    function displayCv() {
+      stopGalleryCarousels();
+      document.getElementById('csVideoEl').pause();
+      caseStudy.classList.remove('active');
+      currentView = 'cv';
+      mainSite.style.display = 'none';
+      navEl.style.display = 'none';
+      cvView.classList.add('active');
+      startCv();
+    }
+
+    function openCv() {
+      if (currentView === 'home') homeScrollBeforeCaseStudy = Math.round(window.scrollY);
+      displayCv();
+      window.scrollTo(0, 0);
+      history.pushState({ cv: true }, '', '#cv');
+    }
+
+    document.querySelectorAll('.resume-btn').forEach((btn) => {
+      btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        setMenu(false);
+        openCv();
+      });
+    });
+
+    document.getElementById('cvBack').addEventListener('click', (event) => {
+      event.preventDefault();
+      displayHome();
+      history.pushState({}, '', location.pathname + location.search);
+      window.scrollTo({ top: homeScrollBeforeCaseStudy, behavior: 'instant' });
     });
 
 
@@ -3318,6 +3482,14 @@
 
     /** Page load / refresh: show the right page, at its top. */
     function restoreStateFromUrl() {
+      // The resume page: "#cv"
+      if (location.hash === '#cv') {
+        displayCv();
+        scrollToTop();
+        keepAtTopUntilLoaded();
+        return;
+      }
+
       const project = getProjectFromHash();
 
       if (project) {
@@ -3346,6 +3518,11 @@
      */
     window.addEventListener('popstate', () => {
       const project = getProjectFromHash();
+
+      if (location.hash === '#cv') {
+        if (currentView !== 'cv') { displayCv(); scrollToTop(); }
+        return;
+      }
 
       if (project && currentView !== project.slug) {
         displayCaseStudy(project);
