@@ -16,7 +16,7 @@
   <meta name="theme-color" id="themeColorMeta" content="#F5F8FA" />
 
   <!-- ============ FAVICON ============ -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23172938'/%3E%3Csvg x='10' y='14' width='44' height='36' viewBox='385 410 314 258' fill='%23F5F8FA'%3E%3Cpath d='M386 411.5 L480 505.5 L456.2 530 L417 491.8 V667 H386 Z'/%3E%3Cpath d='M698 411.5 L604 505.5 L627.8 530 L667 491.8 V667 H698 Z'/%3E%3Cpath d='M445 411 H488.5 L603.6 526.5 L590 533 L541 513 L532.5 499 Z'/%3E%3Cpath fill-rule='evenodd' d='M625.4 583.2 A84 84 0 1 0 457.4 583.2 A84 84 0 1 0 625.4 583.2 Z M595.1 583.2 A53.7 53.7 0 1 1 487.7 583.2 A53.7 53.7 0 1 1 595.1 583.2 Z'/%3E%3C/svg%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23172938'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='Georgia,serif' font-size='32' font-weight='700' letter-spacing='-1' fill='%236EC4D1'%3EIG%3C/text%3E%3C/svg%3E" />
 
   <!-- ============ FONTS ============ -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -2014,6 +2014,33 @@
     .cv-fallback .cv-state { padding: 22px 24px; text-align: left; }
     .cv-fallback .cv-actions { margin-top: 14px; }
     .cv-fallback iframe { width: 100%; height: min(86vh, 1100px); border: 1px solid var(--border); border-radius: var(--radius-image); background: #fff; }
+
+    /* ==========================================================================
+       22. PAGES (home is short; other content lives on its own page)
+       ========================================================================== */
+    .page[hidden] { display: none; }
+    .page { animation: page-in 380ms cubic-bezier(.2, .7, .2, 1); }
+    @keyframes page-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .page--inner > section:first-child { padding-top: calc(var(--section-pad) + 60px); }
+
+    .featured { padding-bottom: 0; }
+    .featured .project-grid { margin-top: 48px; }
+    .section-cta { margin-top: 8px; }
+
+    .explore-sec { padding-top: clamp(40px, 6vw, 72px); }
+    .explore { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .explore a { display: block; padding: 30px clamp(16px, 2vw, 28px); text-decoration: none; color: var(--text); border-left: 1px solid var(--border); transition: background 160ms; }
+    .explore a:first-child { border-left: 0; padding-left: 0; }
+    .explore a:hover { background: var(--glass-bg); }
+    .explore b { display: block; font-family: var(--serif); font-weight: 400; font-size: 1.3rem; letter-spacing: -0.01em; line-height: 1.2; margin-bottom: 6px; }
+    .explore span { display: block; font-size: 0.9rem; color: var(--text-muted); line-height: 1.45; }
+    .explore em { display: inline-block; margin-top: 10px; font-style: normal; font-size: 0.86rem; font-weight: 600; color: color-mix(in srgb, var(--accent) 55%, var(--text)); }
+    @media (max-width: 760px) {
+      .explore { grid-template-columns: 1fr; }
+      .explore a { border-left: 0 !important; padding-left: 0 !important; }
+      .explore a + a { border-top: 1px solid var(--border); }
+    }
+    @media (prefers-reduced-motion: reduce) { .page { animation: none; } }
   </style>
 </head>
 
@@ -2073,6 +2100,16 @@
        ========================================================================== -->
   <main id="mainSite">
 
+    <!-- ==================================================================
+         PAGES
+         The site is split into short pages. The navbar (and any "#about",
+         "#work" ... link) switches between them; only one shows at a time.
+         Contact + footer sit under every page.
+         ================================================================== -->
+
+    <!-- ================= HOME (kept short on purpose) ================= -->
+    <div class="page" data-page="home" id="page-home">
+
     <!-- ---------- HERO ---------- -->
     <section class="hero" id="home">
       <!-- Dot field: reacts to the pointer (see "HERO DOT FIELD" in the script) -->
@@ -2084,7 +2121,7 @@
           <a class="status" href="#contact"><span class="status__dot" aria-hidden="true"></span>Open to new design projects</a>
           <div class="hero-eyebrow-name">Brand &amp; Product Designer</div>
           <h1><span class="line">I design brands</span> <span class="line">and digital experiences</span> <span class="line">that make ideas clear, meaningful, and memorable.</span></h1>
-          <p class="lede">I'm Ibrahim Yebo Goshie, a multidisciplinary designer focused on creating thoughtful brand identities and intuitive digital experiences. I combine strategy, visual design, and user-centered thinking to help startups, businesses, and growing brands communicate clearly and connect with the people they serve.</p>
+          <p class="lede">I'm Ibrahim Yebo Goshie, a multidisciplinary designer creating thoughtful brand identities and intuitive digital experiences for startups, businesses, and growing brands.</p>
 
           <div class="hero-ctas">
             <a href="#work" class="btn-primary">View Portfolio →</a>
@@ -2132,41 +2169,61 @@
       </div>
     </section>
 
-    <!-- ---------- SELECTED WORK ---------- -->
-    <!-- Skills marquee (filled from the coreSkills + tools lists in the script) -->
+
     <div class="marquee-wrap">
       <div class="wrap"><p>Tools and capabilities</p></div>
       <div class="marquee" aria-label="Tools and capabilities"><div class="marquee__track" id="marqueeTrack"></div></div>
     </div>
 
-    <!-- Quick links -->
-    <div class="wrap">
-      <nav class="index" aria-label="Quick links">
-        <a href="#work"><b>Selected work</b><span>Case studies from first research to final design.</span><em>See the projects</em></a>
-        <a href="#process"><b>Process</b><span>How a project moves from the first question to the final design.</span><em>See the process</em></a>
-        <a href="#skills"><b>Capabilities</b><span>Core skills, design tools and technical skills.</span><em>See the skills</em></a>
-        <a href="#education"><b>Education</b><span>Training, qualifications and certifications.</span><em>See the background</em></a>
-      </nav>
-    </div>
 
-    <section id="work">
+    <!-- ---------- FEATURED WORK (which projects: HOME_FEATURED_IDS in the script) ---------- -->
+    <section id="sec-featured" class="featured">
       <div class="wrap">
         <div class="section-head reveal">
           <div class="eyebrow">Selected Work</div>
           <h2>Ideas become meaningful when they're designed with purpose.</h2>
-          <p>From visual identities to digital experiences, I work across strategy, design, and execution to turn ideas into clear and engaging experiences.</p>
         </div>
-
-        <!-- Project cards are generated from the `projects` list in the script -->
-        <div class="project-grid" id="projectGrid"></div>
-
+        <div class="project-grid" id="featuredGrid"></div>
+        <div class="section-cta reveal">
+          <a href="#work" class="btn-primary">View all work →</a>
+        </div>
       </div>
     </section>
 
-    <hr class="divider" />
+    <!-- ---------- WHERE TO GO NEXT ---------- -->
+    <section class="explore-sec">
+      <div class="wrap">
+        <nav class="explore reveal" aria-label="Explore the site">
+          <a href="#about"><b>About</b><span>Who I am and how design and technology meet in my work.</span><em>Read more →</em></a>
+          <a href="#skills"><b>Skills &amp; process</b><span>Core skills, tools, and how a project moves from idea to design.</span><em>See how I work →</em></a>
+          <a href="#education"><b>Education</b><span>Training, qualifications and certifications.</span><em>See the background →</em></a>
+        </nav>
+      </div>
+    </section>
 
-    <!-- ---------- ABOUT ---------- -->
-    <section id="about">
+    </div><!-- /home -->
+
+
+    <!-- ================= WORK ================= -->
+    <div class="page page--inner" data-page="work" id="page-work" hidden>
+      <section id="sec-work">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <div class="eyebrow">Selected Work</div>
+            <h2>Ideas become meaningful when they're designed with purpose.</h2>
+            <p>From visual identities to digital experiences, I work across strategy, design, and execution to turn ideas into clear and engaging experiences.</p>
+          </div>
+
+          <!-- Project cards are generated from the `projects` list in the script -->
+          <div class="project-grid" id="projectGrid"></div>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- ================= ABOUT ================= -->
+    <div class="page page--inner" data-page="about" id="page-about" hidden>
+<section id="sec-about">
       <div class="wrap about-grid">
         <div class="reveal">
           <div class="eyebrow">About Me</div>
@@ -2179,10 +2236,20 @@
       </div>
     </section>
 
-    <hr class="divider" />
+<section class="dxt">
+      <div class="wrap">
+        <div class="eyebrow reveal">Design × Technology</div>
+        <h2 class="reveal">Design meets technology.</h2>
+        <p class="reveal">My background in engineering and technology gives me another way to approach design problems — combining creativity with structure, logic, systems thinking, and curiosity.</p>
+        <div class="dxt-pills reveal" id="techSkills"></div>
+      </div>
+    </section>
+    </div>
 
-    <!-- ---------- SKILLS ---------- -->
-    <section id="skills">
+
+    <!-- ================= SKILLS & PROCESS ================= -->
+    <div class="page page--inner" data-page="skills" id="page-skills" hidden>
+<section id="sec-skills">
       <div class="wrap skills-wrap">
         <div class="reveal">
           <div class="eyebrow">Capabilities</div>
@@ -2203,8 +2270,7 @@
 
     <hr class="divider" />
 
-    <!-- ---------- PROCESS ---------- -->
-    <section id="process">
+<section id="sec-process">
       <div class="wrap">
         <div class="section-head reveal">
           <div class="eyebrow">My Design Process</div>
@@ -2213,11 +2279,12 @@
         <div class="process-list reveal" id="processList"></div>
       </div>
     </section>
+    </div>
 
-    <hr class="divider" />
 
-    <!-- ---------- EDUCATION ---------- -->
-    <section id="education">
+    <!-- ================= EDUCATION & CERTIFICATIONS ================= -->
+    <div class="page page--inner" data-page="education" id="page-education" hidden>
+<section id="sec-education">
       <div class="wrap edu-grid">
         <div class="reveal">
           <div class="eyebrow">Education</div>
@@ -2240,16 +2307,8 @@
         </div>
       </div>
     </section>
+    </div>
 
-    <!-- ---------- DESIGN x TECHNOLOGY ---------- -->
-    <section class="dxt">
-      <div class="wrap">
-        <div class="eyebrow reveal">Design × Technology</div>
-        <h2 class="reveal">Design meets technology.</h2>
-        <p class="reveal">My background in engineering and technology gives me another way to approach design problems — combining creativity with structure, logic, systems thinking, and curiosity.</p>
-        <div class="dxt-pills reveal" id="techSkills"></div>
-      </div>
-    </section>
 
     <!-- ---------- CONTACT ---------- -->
     <section id="contact">
@@ -2276,7 +2335,7 @@
         <a href="https://www.instagram.com/y.e.b.o/" target="_blank" rel="noopener">Instagram</a>
         <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=metrogee02@gmail.com" target="_blank" rel="noopener noreferrer">Email</a>
       </div>
-      <a href="#home" class="to-top">Back to top ↑</a>
+      <a href="#" class="to-top" id="toTopLink">Back to top ↑</a>
     </footer>
 
   </main>
@@ -2828,12 +2887,15 @@
       });
     }
 
-    /** Builds the project cards on the home page. */
-    function renderProjectCards() {
-      const grid = document.getElementById('projectGrid');
+    /** Which projects appear on the home page (by id). The Work page always shows all of them. */
+    const HOME_FEATURED_IDS = [1, 2];
+
+    /** Builds project cards inside the grid with the given id. */
+    function renderProjectCards(gridId, list) {
+      const grid = document.getElementById(gridId);
       grid.innerHTML = '';
 
-      projects.forEach((project) => {
+      list.forEach((project) => {
         const card = document.createElement('div');
         card.className = 'project-card reveal';
         card.dataset.id = project.id;
@@ -2902,7 +2964,8 @@
       });
     }
 
-    renderProjectCards();
+    renderProjectCards('featuredGrid', projects.filter((p) => HOME_FEATURED_IDS.includes(p.id)));
+    renderProjectCards('projectGrid', projects);
     renderPills('coreSkills', coreSkills);
     renderPills('toolSkills', tools);
     renderPills('techSkills', techSkills);
@@ -2978,24 +3041,8 @@
       if (event.key === 'Escape' && mobileMenu.classList.contains('open')) setMenu(false);
     });
 
-    // Highlight the nav link of the section currently in view
-    const sectionIds = ['home', 'work', 'about', 'skills', 'education', 'contact'];
+    // Nav highlight follows the current page (see showPage in the routing section)
     const navLinks = document.querySelectorAll('.nav-link');
-
-    const sectionObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          navLinks.forEach((link) => {
-            link.classList.toggle('active', link.dataset.target === entry.target.id);
-          });
-        }
-      });
-    }, { rootMargin: '-45% 0px -50% 0px' });
-
-    sectionIds.forEach((id) => {
-      const section = document.getElementById(id);
-      if (section) sectionObserver.observe(section);
-    });
 
     // Fade elements in as they scroll into view
     const revealObserver = new IntersectionObserver((entries) => {
@@ -3269,8 +3316,9 @@
     }
 
     /** Hides the case study and shows the main site again. */
-    function displayHome() {
+    function displayHome(page) {
       currentView = 'home';
+      showPage(page || currentPage);
       stopGalleryCarousels();
       document.getElementById('csVideoEl').pause();
       caseStudy.classList.remove('active');
@@ -3285,7 +3333,7 @@
       if (!project) return;
 
       // Remember (in memory only) where we were so the browser Back button can return there
-      if (currentView === 'home') homeScrollBeforeCaseStudy = Math.round(window.scrollY);
+      if (currentView === 'home') { homeScrollBeforeCaseStudy = Math.round(window.scrollY); pageBeforeOverlay = currentPage; }
 
       displayCaseStudy(project);
       window.scrollTo(0, 0);
@@ -3294,9 +3342,9 @@
 
     document.getElementById('csBack').addEventListener('click', (event) => {
       event.preventDefault();
-      displayHome();
-      history.pushState({}, '', '#work');
-      document.getElementById('work').scrollIntoView();
+      displayHome('work');
+      history.pushState({ page: 'work' }, '', '#work');
+      window.scrollTo({ top: 0, behavior: 'instant' });
     });
 
 
@@ -3312,7 +3360,7 @@
       pdf:    'cv.pdf',                       // the PDF, in the same folder as this page
       pdfjs:  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
       worker: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
-      drive:  'https://drive.google.com/file/d/1N9Ye51-acP7mc1TsaCbmxBksvjiUTsQg/view?usp=drive_link' // shown only if the PDF cannot be displayed here
+      drive:  'https://drive.google.com/file/d/11xZfXvXsuWZEKzFQODqfySu_RnMscDGc/view?usp=drive_link' // shown only if the PDF cannot be displayed here
     };
     let cvDoc = null, cvStarted = false, cvToken = 0, cvLastWidth = 0;
 
@@ -3403,7 +3451,7 @@
     }
 
     function openCv() {
-      if (currentView === 'home') homeScrollBeforeCaseStudy = Math.round(window.scrollY);
+      if (currentView === 'home') { homeScrollBeforeCaseStudy = Math.round(window.scrollY); pageBeforeOverlay = currentPage; }
       displayCv();
       window.scrollTo(0, 0);
       history.pushState({ cv: true }, '', '#cv');
@@ -3419,8 +3467,8 @@
 
     document.getElementById('cvBack').addEventListener('click', (event) => {
       event.preventDefault();
-      displayHome();
-      history.pushState({}, '', location.pathname + location.search);
+      displayHome(pageBeforeOverlay);
+      history.pushState({}, '', urlForPage(pageBeforeOverlay));
       window.scrollTo({ top: homeScrollBeforeCaseStudy, behavior: 'instant' });
     });
 
@@ -3436,6 +3484,71 @@
 
     let currentView = 'home';            // 'home' or a project slug
     let homeScrollBeforeCaseStudy = 0;   // in memory only (not saved across refreshes)
+
+    // The pages of the main site. "#work", "#about" ... in the URL pick one.
+    const PAGES = ['home', 'work', 'about', 'skills', 'education'];
+    const PAGE_ALIASES = { process: { page: 'skills', target: 'sec-process' } };   // older links
+    let currentPage = 'home';
+    let pageBeforeOverlay = 'home';      // page to return to from a case study / the resume
+
+    /** Shows one page of the main site and highlights its nav link. */
+    function showPage(page) {
+      if (!PAGES.includes(page)) page = 'home';
+      currentPage = page;
+      document.querySelectorAll('.page').forEach((el) => { el.hidden = el.dataset.page !== page; });
+      navLinks.forEach((link) => link.classList.toggle('active', link.dataset.target === page));
+    }
+
+    /** The page named in the URL hash: { page, target? } or null (home, "#contact", a project...). */
+    function pageFromHash() {
+      const id = location.hash.slice(1);
+      if (PAGES.includes(id)) return { page: id };
+      return PAGE_ALIASES[id] || null;
+    }
+
+    function urlForPage(page) {
+      return page === 'home' ? location.pathname + location.search : '#' + page;
+    }
+
+    /** Opens a page (adds a history entry) and scrolls to the top, or to `target` inside it. */
+    function goToPage(page, target) {
+      if (page !== currentPage) {
+        showPage(page);
+        history.pushState({ page }, '', urlForPage(page));
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (!target) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      const el = target && document.getElementById(target);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Every in-site link ("#work", "#about", "#contact" ...) switches page instead of jumping down a long page
+    document.addEventListener('click', (event) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = event.target.closest('a[href^="#"]');
+      if (!link || currentView !== 'home') return;
+      const id = link.getAttribute('href').slice(1);
+
+      if (id === 'contact') {               // contact sits under every page
+        event.preventDefault();
+        setMenu(false);
+        document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      const alias = PAGE_ALIASES[id];
+      const page = alias ? alias.page : (PAGES.includes(id) ? id : null);
+      if (!page) return;
+      event.preventDefault();
+      setMenu(false);
+      goToPage(page, alias && alias.target);
+    });
+
+    // "Back to top" in the footer
+    document.getElementById('toTopLink').addEventListener('click', (event) => {
+      event.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 
     // We control scrolling ourselves, so stop the browser restoring old positions
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -3491,6 +3604,8 @@
       }
 
       const project = getProjectFromHash();
+      const hashPage = pageFromHash();
+      const page = hashPage ? hashPage.page : 'home';
 
       if (project) {
         // Refreshing a case study -> the same case study, from the top
@@ -3498,23 +3613,25 @@
         scrollToTop();
         keepAtTopUntilLoaded();
       } else if (isPageReload()) {
-        // Refreshing the home page -> home page, from the top
-        // (the section part of the URL, like "#work", is dropped so the browser can't jump to it)
-        displayHome();
-        history.replaceState(null, '', location.pathname + location.search);
+        // Refreshing -> the same page, from the top
+        displayHome(page);
+        if (!hashPage) history.replaceState(null, '', location.pathname + location.search);
         scrollToTop();
         keepAtTopUntilLoaded();
       } else {
-        // Fresh visit or a shared link such as "...#contact" -> honor the link
-        displayHome();
-        scrollToHashTarget();
+        // Fresh visit or a shared link such as "...#about" or "...#contact"
+        displayHome(page);
+        if (!hashPage && location.hash) {
+          scrollToHashTarget();
+        } else {
+          scrollToTop();
+          keepAtTopUntilLoaded();
+        }
       }
     }
 
     /**
-     * Browser Back / Forward buttons. Only acts when the page type actually
-     * changes (home <-> case study); normal in-page anchor clicks such as
-     * "#about" are left to the browser.
+     * Browser Back / Forward buttons: switch between pages, case studies and the resume.
      */
     window.addEventListener('popstate', () => {
       const project = getProjectFromHash();
@@ -3527,9 +3644,18 @@
       if (project && currentView !== project.slug) {
         displayCaseStudy(project);
         scrollToTop();
-      } else if (!project && currentView !== 'home') {
-        displayHome();
+        return;
+      }
+      if (project) return;
+
+      const hashPage = pageFromHash();
+      const page = hashPage ? hashPage.page : 'home';
+      if (currentView !== 'home') {
+        displayHome(page);
         window.scrollTo({ top: homeScrollBeforeCaseStudy, behavior: 'instant' });
+      } else if (page !== currentPage) {
+        showPage(page);
+        scrollToTop();
       }
     });
 
